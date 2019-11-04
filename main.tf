@@ -1,5 +1,5 @@
 resource "aws_lb" "lb" {
-  name               = "outyet-lb"
+  name_prefix        = "outyet-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = ["${aws_security_group.lb-sg.id}"]
