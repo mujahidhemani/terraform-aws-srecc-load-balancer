@@ -2,13 +2,13 @@ resource "aws_lb" "lb" {
   name_prefix        = "outyet"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = ["${aws_security_group.lb-sg.id}"]
+  security_groups    = ["${aws_security_group.lb-frontend-sg.id}", "${var.backend_app_sg_id}"]
   subnets            = "${var.subnet_ids}"
 }
 
-resource "aws_security_group" "lb-sg" {
-  name        = "lb-security-group"
-  description = "Security group to allow LB communication"
+resource "aws_security_group" "lb-frontend-sg" {
+  name        = "lb-frontend-sg"
+  description = "Allow inbound traffic to the LB"
   vpc_id      = "${var.vpc_id}"
 
   ingress {
@@ -16,12 +16,11 @@ resource "aws_security_group" "lb-sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTP port 80 traffic"
   }
-  egress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
